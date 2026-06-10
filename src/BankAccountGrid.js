@@ -4,7 +4,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./apps.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dropdown, DropdownButton } from "react-bootstrap";
@@ -44,11 +44,37 @@ function BankAccGrid() {
   const [createdDate, setCreatedDate] = useState("");
   const [modifiedDate, setModifiedDate] = useState("");
 
+  const location = useLocation();
+
   //code added by Harish purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
   const AccNamePermission = permissions
     .filter(permission => permission.screen_type === 'AccountName')
     .map(permission => permission.permission_type.toLowerCase());
+
+  useEffect(() => {
+    if (location.state?.preservedRowData) {
+      setRowData(location.state.preservedRowData);
+    }
+
+    if (location.state?.preservedInputs) {
+      setaccount_code(location.state.preservedInputs.account_code || "");
+      setaccount_name(location.state.preservedInputs.account_name || "");
+      setacc_addr_1(location.state.preservedInputs.acc_addr_1 || "");
+      setacc_area_code(location.state.preservedInputs.acc_area_code || "");
+      setacc_state_code(location.state.preservedInputs.acc_state_code || "");
+      setacc_country_code(location.state.preservedInputs.acc_country_code || "");
+      setbranch(location.state.preservedInputs.branch || "");
+      setaccount_type(location.state.preservedInputs.account_type || "");
+
+      if (location.state.preservedInputs.account_type) {
+        setselectedAcctype({
+          label: location.state.preservedInputs.account_type,
+          value: location.state.preservedInputs.account_type,
+        });
+      }
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const company_code = sessionStorage.getItem('selectedCompanyCode');
@@ -150,6 +176,19 @@ function BankAccGrid() {
     window.location.reload();
   };
 
+  const clearInputFields = () => {
+    setaccount_code("");
+    setaccount_name("");
+    setacc_addr_1("");
+    setacc_area_code("");
+    setacc_state_code("");
+    setacc_country_code("");
+    setbranch("");
+    setaccount_type("");
+    setselectedAcctype("");
+    setRowData([]);
+  };
+
   const handleSearch = async () => {
     setLoading(true);
     try {
@@ -188,6 +227,7 @@ function BankAccGrid() {
       checkboxSelection: true,
       headerName: "Accountant Code",
       field: "account_code",
+      cellClass: "ag-link-cell",
       cellStyle: { textAlign: "left" },
       cellEditorParams: {
         maxLength: 18,
@@ -482,7 +522,25 @@ function BankAccGrid() {
   };
 
   const handleNavigateWithRowData = (selectedRow) => {
-    navigate("/AddBankAccount", { state: { mode: "update", selectedRow } });
+    navigate("/AddBankAccount", {
+      state: {
+        mode: "update",
+        selectedRow,
+
+        preservedRowData: rowData,
+
+        preservedInputs: {
+          account_code,
+          account_name,
+          acc_addr_1,
+          acc_area_code,
+          acc_state_code,
+          acc_country_code,
+          branch,
+          account_type
+        },
+      },
+    });
   };
 
   const onSelectionChanged = () => {
@@ -855,7 +913,7 @@ function BankAccGrid() {
                 <div class=" d-flex  justify-content-center">
 
                   <div class=''><icon className="popups-btn fs-6 p-3" onClick={handleSearch} required title="Search"><i className="fas fa-search"></i></icon></div>
-                  <div><icon className="popups-btn fs-6 p-3" onClick={reloadGridData} required title="Reload"><FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" /></icon></div>
+                  <div><icon className="popups-btn fs-6 p-3" onClick={clearInputFields} required title="Reload"><FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" /></icon></div>
                 </div> </div></div>
           </div>
           <div class="ag-theme-alpine" style={{ height: 485, width: "100%" }}>

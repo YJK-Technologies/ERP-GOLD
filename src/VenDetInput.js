@@ -388,8 +388,13 @@ function VenDetInput({ }) {
   };
 
   const handleNavigate = () => {
-    navigate("/Vendor", { selectedRows }); // Pass selectedRows as props to the Input component
-  };
+  navigate("/Vendor", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs
+    }
+  });
+};
 
   const handleInsert = async () => {
     if (
@@ -520,7 +525,7 @@ function VenDetInput({ }) {
         console.log("Data inserted successfully");
         toast.success("Data Updated successfully!")
         setIsUpdated(true);
-        clearInputFields();
+        // clearInputFields();
       } else if (response.status === 400) {
         const errorResponse = await response.json();
         console.error(errorResponse.message);

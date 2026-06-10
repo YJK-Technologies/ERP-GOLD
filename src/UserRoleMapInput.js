@@ -160,7 +160,12 @@ function UserRoleInput({ }) {
   };
 
   const handleNavigate = () => {
-    navigate("/UserRoleMapping"); // Pass selectedRows as props to the Input component
+     navigate("/UserRoleMapping", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs
+    }
+  });
   };
 
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
@@ -214,7 +219,7 @@ function UserRoleInput({ }) {
       });
       if (response.ok) {
         toast.success("Data Updated Successfully", {
-          onClose: () => clearInputFields(),
+          // onClose: () => clearInputFields(),
         });
       } else {
         const errorResponse = await response.json();

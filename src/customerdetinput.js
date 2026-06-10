@@ -427,8 +427,13 @@ function CustomerDetInput({ }) {
   };
 
   const handleNavigate = () => {
-    navigate("/Customer", { selectedRows });
-  };
+  navigate("/Customer", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs
+    }
+  });
+};
 
   const handleInsert = async () => {
     if (
@@ -567,7 +572,7 @@ function CustomerDetInput({ }) {
       });
       if (response.ok) {
         toast.success("Data Updated Successfully", {
-          onClose: () => clearInputFields(),
+          // onClose: () => clearInputFields(),
         });
       } else {
         const errorResponse = await response.json();

@@ -206,7 +206,7 @@ function DesginationInput({ }) {
       if (response.status === 200) {
         console.log("Data Updated successfully");
         setIsUpdated(true);
-        clearInputFields();
+        // clearInputFields();
         toast.success("Data Updated successfully!")
       } else {
         const errorResponse = await response.json();
@@ -224,8 +224,13 @@ function DesginationInput({ }) {
 
 
   const handleNavigate = () => {
-    navigate("/DesgiantionInfo");
-  };
+  navigate("/DesgiantionInfo", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs
+    }
+  });
+};
 
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
