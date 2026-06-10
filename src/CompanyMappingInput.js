@@ -220,8 +220,13 @@ function UserComMap_input({ }) {
   };
 
   const handleNavigate = () => {
-    navigate("/CompanyMapping"); // Pass selectedRows as props to the Input component
-  };
+  navigate("/CompanyMapping", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs
+    }
+  });
+};
 
   const handleKeyDown = async (
     e,
@@ -282,7 +287,7 @@ function UserComMap_input({ }) {
       });
       if (response.ok) {
         toast.success("Data Updated Successfully", {
-          onClose: () => clearInputFields(),
+          // onClose: () => clearInputFields(),
         });
       } else {
         const errorResponse = await response.json();

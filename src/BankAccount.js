@@ -354,8 +354,13 @@ function BankAccInput({}) {
 
 
   const handleNavigate = () => {
-    navigate("/BankAccount", { selectedRows }); // Pass selectedRows as props to the Input component
-  };
+  navigate("/BankAccount", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs
+    }
+  });
+};
 
 
 const handleInsert = async () => {

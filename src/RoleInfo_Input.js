@@ -91,7 +91,12 @@ function Role_input({ }) {
   };
 
   const handleNavigate = () => {
-    navigate("/Role", { state: { mode: "create" } }); // Pass selectedRows as props to the Input component
+    navigate("/Role", {
+      state: {
+        preservedRowData: location.state?.preservedRowData,
+        preservedInputs: location.state?.preservedInputs,
+      },
+    });
   };
 
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
@@ -146,7 +151,7 @@ function Role_input({ }) {
       });
       if (response.ok) {
         toast.success("Data Updated Successfully", {
-          onClose: () => clearInputFields(),
+          // onClose: () => clearInputFields(),
         });
       } else {
         const errorResponse = await response.json();

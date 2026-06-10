@@ -369,7 +369,12 @@ function UserInput({ }) {
   }
 
   const handleNavigate = () => {
-    navigate("/User"); // Pass selectedRows as props to the Input component
+    navigate("/User", {
+      state: {
+        preservedRowData: location.state?.preservedRowData,
+        preservedInputs: location.state?.preservedInputs,
+      },
+    });
   };
 
   // const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
@@ -461,7 +466,7 @@ function UserInput({ }) {
       if (response.status === 200) {
         console.log("Data Updated successfully");
         setIsUpdated(true);
-        clearInputFields();
+        // clearInputFields();
         setTimeout(() => {
           toast.success("Data Updated successfully!")
         })

@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "./input.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import LoadingScreen from './Loading';
@@ -332,7 +331,7 @@ function LocInfoInput({ }) {
       });
       if (response.ok) {
         toast.success("Data Updated Successfully", {
-          onClose: () => clearInputFields(),
+          // onClose: () => clearInputFields(),
         });
       } else {
         const errorResponse = await response.json();
@@ -353,8 +352,13 @@ function LocInfoInput({ }) {
   }
 
   const handleNavigate = () => {
-    navigate("/Location"); // Pass selectedRows as props to the Input component
-  };
+  navigate("/Location", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs,
+    },
+  });
+};
 
   const handleKeyDown = async (
     e,
