@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 import PurchaseWarehousePopup from './PurchaseWarehousePopup';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import Search from './search-icon.svg';
-import { upperCase } from "upper-case";
 // import PurchasePopup from './PurchasePopup'
 import PurchaseDelDetPopup from './PurchaseDelDetPopup'
 const config = require('./Apiconfig');
