@@ -4,7 +4,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./apps.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
@@ -39,13 +39,32 @@ function Desgination() {
   const [createdDate, setCreatedDate] = useState("");
   const [modifiedDate, setModifiedDate] = useState("");
 
+  const location = useLocation();
+
   //code added by Pavun purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
   const companyPermissions = permissions
     .filter(permission => permission.screen_type === 'Company')
     .map(permission => permission.permission_type.toLowerCase());
 
-
+  useEffect(() => {
+        if (location.state?.preservedRowData) {
+          setRowData(location.state.preservedRowData);
+        }
+      
+        if (location.state?.preservedInputs) {
+          setdept_id(location.state.preservedInputs.dept_id || "");
+          setdesgination_id(location.state.preservedInputs.desgination_id || "");
+          setStatus(location.state.preservedInputs.status || "");
+      
+          if (location.state.preservedInputs.status) {
+            setSelectedStatus({
+              label: location.state.preservedInputs.status,
+              value: location.state.preservedInputs.status,
+            });
+          }
+        }
+      }, [location.state]);
 
 
 
@@ -157,13 +176,20 @@ function Desgination() {
     window.location.reload();
   };
 
-
+  const clearInputFields = () => {
+setdept_id("");
+setdesgination_id("");
+setStatus("");
+setSelectedStatus("");
+    setRowData([]);
+  };
 
   const columnDefs = [
     {
       headerCheckboxSelection: true,
       headerName: "Department ID",
       field: "dept_id",
+      cellClass: "ag-link-cell",
       cellStyle: { textAlign: "left" },
       checkboxSelection: true,
       cellEditorParams: {
@@ -351,8 +377,21 @@ function Desgination() {
     navigate("/AddDesgination", { state: { mode: "create" } }); // Pass selectedRows as props to the Input component
   };
   const handleNavigateWithRowData = (selectedRow) => {
-    navigate("/AddDesgination", { state: { mode: "update", selectedRow } });
-  };
+  navigate("/AddDesgination", {
+    state: {
+      mode: "update",
+      selectedRow,
+
+      preservedRowData: rowData,
+
+      preservedInputs: {
+        dept_id,
+        desgination_id,
+        status,
+      },
+    },
+  });
+};
   const onSelectionChanged = () => {
     const selectedNodes = gridApi.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
@@ -686,7 +725,7 @@ function Desgination() {
                       </icon>
                       </div>
                   <div>
-                    <icon className="popups-btn fs-6 p-3" onClick={reloadGridData} required title="Reload">
+                    <icon className="popups-btn fs-6 p-3" onClick={clearInputFields} required title="Reload">
                       <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                     </icon>
                     </div>

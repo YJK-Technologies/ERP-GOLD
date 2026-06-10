@@ -306,8 +306,13 @@ function IntermediaryDetailInput({ }) {
   }
 
   const handleNavigate = () => {
-    navigate("/Intermediary"); // Pass selectedRows as props to the Input component
-  };
+  navigate("/Intermediary", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs
+    }
+  });
+};
 
   const handleKeyDown = async (e, nextFieldRef, value, hasValueChanged, setHasValueChanged) => {
     if (e.key === 'Enter') {
@@ -394,7 +399,7 @@ function IntermediaryDetailInput({ }) {
       if (response.status === 200) {
         console.log("Data Updated successfully");
         setIsUpdated(true); 
-        clearInputFields();
+        // clearInputFields();
         toast.success("Data Updated successfully!")
       } else if (response.status === 400) {
         const errorResponse = await response.json();

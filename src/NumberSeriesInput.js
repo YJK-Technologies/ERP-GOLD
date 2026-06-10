@@ -133,7 +133,7 @@ function NumberSeriesInput({ }) {
       if (response.status === 200) {
         console.log("Data Updated successfully");
         setIsUpdated(true); 
-        clearInputFields();
+        // clearInputFields();
         toast.success("Data Updated successfully!")
       }
        else if (response.status === 400) {
@@ -318,8 +318,13 @@ function NumberSeriesInput({ }) {
   };
   
   const handleNavigate = () => {
-    navigate("/NumberSeries");
-  };
+  navigate("/NumberSeries", {
+    state: {
+      preservedRowData: location.state?.preservedRowData,
+      preservedInputs: location.state?.preservedInputs
+    }
+  });
+};
 
 
 

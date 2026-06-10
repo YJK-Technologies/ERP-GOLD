@@ -5,7 +5,7 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import "ag-grid-enterprise";
 import "./apps.css";
 import './App.css'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
 import labels from "./Labels";
@@ -49,6 +49,8 @@ function Grid() {
   const [createdDate, setCreatedDate] = useState("");
   const [modifiedDate, setModifiedDate] = useState("");
 
+  const location = useLocation();
+
   //code added by Pavun purpose of set user permisssion
   const permissions = JSON.parse(sessionStorage.getItem('permissions')) || {};
   const companyPermissions = permissions
@@ -62,6 +64,30 @@ function Grid() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+  if (location.state?.preservedRowData) {
+    setRowData(location.state.preservedRowData);
+  }
+
+  if (location.state?.preservedInputs) {
+    setCompany_no(location.state.preservedInputs.company_no || "");
+    setCompany_name(location.state.preservedInputs.company_name || "");
+    setCity(location.state.preservedInputs.city || "");
+    setPincode(location.state.preservedInputs.pincode || "");
+    setCountry(location.state.preservedInputs.country || "");
+    setcompany_gst_no(location.state.preservedInputs.company_gst_no || "");
+    setState(location.state.preservedInputs.state || "");
+    setStatus(location.state.preservedInputs.status || "");
+
+    if (location.state.preservedInputs.status) {
+      setSelectedStatus({
+        label: location.state.preservedInputs.status,
+        value: location.state.preservedInputs.status,
+      });
+    }
+  }
+}, [location.state]);
 
   useEffect(() => {
     const company_code = sessionStorage.getItem('selectedCompanyCode');
@@ -189,7 +215,9 @@ function Grid() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ company_no:sessionStorage.getItem('selectedCompanyCode'), company_name, city, state, pincode, country, status, company_gst_no }) // Send company_no and company_name as search criteria
+        body: JSON.stringify({
+           company_no, 
+           company_name, city, state, pincode, country, status, company_gst_no }) // Send company_no and company_name as search criteria
       });
       if (response.ok) {
         const searchData = await response.json();
@@ -215,6 +243,18 @@ function Grid() {
   const reloadGridData = () => {
     window.location.reload();
   };
+  const clearInputFields = () => {
+    setCompany_no("");
+    setCompany_name("");
+    setCity("");
+    setState("");
+    setPincode("");
+    setCountry("");
+    setcompany_gst_no("");
+    setSelectedStatus("");
+    setStatus("");
+    setRowData([]);
+  };
 
   const arrayBufferToBase64 = (buffer) => {
     let binary = '';
@@ -261,6 +301,7 @@ function Grid() {
       headerCheckboxSelection: true,
       headerName: "Company No",
       field: "company_no",
+      cellClass: "ag-link-cell",
       cellStyle: { textAlign: "left" },
       checkboxSelection: true,
       cellEditorParams: {
@@ -610,8 +651,26 @@ function Grid() {
   };
 
   const handleNavigateWithRowData = (selectedRow) => {
-    navigate("/AddCompany", { state: { mode: "update", selectedRow } });
-  };
+  navigate("/AddCompany", {
+    state: {
+      mode: "update",
+      selectedRow,
+
+      preservedRowData: rowData,
+
+      preservedInputs: {
+        company_no,
+        company_name,
+        city,
+        state,
+        pincode,
+        country,
+        company_gst_no,
+        status,
+      },
+    },
+  });
+};
 
   const onSelectionChanged = () => {
     const selectedNodes = gridApi.getSelectedNodes();
@@ -993,7 +1052,7 @@ function Grid() {
                   </icon>
                 </div>
                 <div>
-                  <icon className=" popups-btn text-dark fs-6" onClick={reloadGridData} required title="Reload">
+                  <icon className=" popups-btn text-dark fs-6" onClick={clearInputFields} required title="Reload">
                     <FontAwesomeIcon icon="fa-solid fa-arrow-rotate-right" />
                   </icon>
                 </div>
